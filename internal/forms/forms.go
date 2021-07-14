@@ -574,6 +574,7 @@ func (m *Manager) buildFormFolder() (FormFolder, error) {
 }
 
 func (m *Manager) innerRecursiveBuildFormFolder(rootPath string) (FormFolder, error) {
+	log.Printf("Examining '%s' for forms", rootPath)
 	rootFile, err := os.Open(rootPath)
 	if err != nil {
 		return FormFolder{}, err
@@ -600,7 +601,9 @@ func (m *Manager) innerRecursiveBuildFormFolder(rootPath string) (FormFolder, er
 
 	formCnt := 0
 	for _, info := range infos {
+		log.Printf("Looking at child '%s'", info.Name())
 		if info.IsDir() {
+			log.Printf("Child '%s' is a directory; recursing down", info.Name())
 			subfolder, err := m.innerRecursiveBuildFormFolder(path.Join(rootPath, info.Name()))
 			if err != nil {
 				return retVal, err
@@ -610,16 +613,22 @@ func (m *Manager) innerRecursiveBuildFormFolder(rootPath string) (FormFolder, er
 			continue
 		}
 		if filepath.Ext(info.Name()) != txtFileExt {
+			log.Printf("Child '%s' is not a text file; ignoring", info.Name())
 			continue
 		}
+		log.Printf("Child '%s' is a form", info.Name())
 		frm, err := m.buildFormFromTxt(path.Join(rootPath, info.Name()))
 		if err != nil {
+			log.Printf("There was problem building '%s' as a form, ignoring: %v", info.Name(), err)
 			continue
 		}
 		if frm.InitialURI != "" || frm.ViewerURI != "" {
+			log.Printf("Adding '%s' as a form", info.Name())
 			formCnt++
 			retVal.Forms = append(retVal.Forms, frm)
 			retVal.FormCount++
+		} else {
+			log.Printf("Form '%s' doesn't have both an InitialURI and ViewerURI, skipping it", info.Name())
 		}
 	}
 	sort.Slice(retVal.Folders, func(i, j int) bool {
