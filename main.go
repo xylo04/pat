@@ -39,6 +39,7 @@ const (
 	MethodAX25      = "ax25"
 	MethodSerialTNC = "serial-tnc"
 	MethodPactor    = "pactor"
+	MethodVara      = "vara"
 )
 
 var commands = []Command{
@@ -441,6 +442,12 @@ func cleanup() {
 	if pModem != nil {
 		if err := pModem.Close(); err != nil {
 			log.Fatalf("Failure to close pactor modem: %s", err)
+		}
+	}
+
+	if vModem != nil {
+		if err := vModem.Close(); err != nil {
+			log.Fatalf("Failure to close vara modem: %s", err)
 		}
 	}
 

@@ -442,6 +442,7 @@ function initConnectModal() {
       case 'ardop':
       case 'winmor':
       case 'pactor':
+      case 'vara':
         $('#modeSearchSelect').val($(e.target).val());
         break;
       case 'serial-tnc':

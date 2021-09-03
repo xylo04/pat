@@ -225,6 +225,14 @@ func abortActiveConnection(dirty bool) (ok bool) {
 			}
 		}()
 		return true
+	case vModem != nil:
+		log.Println("Disconnecting vara...")
+		go func() {
+			if err := vModem.Close(); err != nil {
+				log.Println(err)
+			}
+		}()
+		return true
 	case dialing != nil:
 		log.Printf("Transport %s's dialer can not be aborted at this stage", dialing.Scheme)
 		return false

@@ -78,6 +78,7 @@ func (f Frequency) Dial(mode string) Frequency {
 		"winmor": 1500,
 		"pactor": 1500,
 		"ardop":  1500,
+		"vara":  1500,
 	}
 
 	var shift Frequency
@@ -102,6 +103,8 @@ func VFOForTransport(transport string) (vfo hamlib.VFO, rigName string, ok bool,
 		rig = config.AX25.Rig
 	case MethodPactor:
 		rig = config.Pactor.Rig
+	case MethodVara:
+		rig = config.Vara.Rig
 	default:
 		return vfo, "", false, fmt.Errorf("not supported with transport '%s'", transport)
 	}

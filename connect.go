@@ -15,6 +15,7 @@ import (
 	"github.com/la5nta/wl2k-go/transport"
 	"github.com/la5nta/wl2k-go/transport/ardop"
 	"github.com/la5nta/wl2k-go/transport/winmor"
+	"github.com/n8jja/Pat-Vara/vara"
 
 	// Register other dialers
 	_ "github.com/la5nta/wl2k-go/transport/ax25"
@@ -26,6 +27,7 @@ var (
 	wmTNC   *winmor.TNC    // Pointer to the WINMOR TNC used by Listen and Connect
 	adTNC   *ardop.TNC     // Pointer to the ARDOP TNC used by Listen and Connect
 	pModem  *pactor.Modem
+	vModem  *vara.Modem
 )
 
 func hasSSID(str string) bool { return strings.Contains(str, "-") }
@@ -70,6 +72,11 @@ func Connect(connectStr string) (success bool) {
 			ptCmdInit = strings.Join(val, "\n")
 		}
 		if err := initPactorModem(ptCmdInit); err != nil {
+			log.Println(err)
+			return
+		}
+	case MethodVara:
+		if err := initVaraModem(); err != nil {
 			log.Println(err)
 			return
 		}
@@ -309,5 +316,30 @@ func initPactorModem(cmdlineinit string) error {
 
 	transport.RegisterDialer("pactor", pModem)
 
+	return nil
+}
+
+func initVaraModem() error {
+	if vModem != nil {
+		_ = vModem.Close()
+	}
+	vConf := vara.ModemConfig{
+		Host:     config.Vara.Host,
+		CmdPort:  config.Vara.CmdPort,
+		DataPort: config.Vara.DataPort,
+	}
+	var err error
+	vModem, err = vara.NewModem(fOptions.MyCall, vConf)
+	if err != nil {
+		return fmt.Errorf("vara initialization failed: %w", err)
+	}
+
+	transport.RegisterDialer(MethodVara, vModem)
+
+	rig, ok := rigs[config.Vara.Rig]
+	if !ok {
+		return fmt.Errorf("unable to set PTT rig '%s': not defined or not loaded", config.Vara.Rig)
+	}
+	vModem.SetPTT(rig)
 	return nil
 }

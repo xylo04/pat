@@ -15,6 +15,7 @@ require (
 	github.com/la5nta/wl2k-go v0.7.5
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.15
+	github.com/n8jja/Pat-Vara/vara v0.0.0-20210916035952-108f70615020
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/pd0mz/go-maidenhead v1.0.0
 	github.com/peterh/liner v1.2.1

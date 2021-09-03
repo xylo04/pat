@@ -44,6 +44,13 @@
     "listen_addr": ":8774",
     "password": ""
   },
+  "vara": {
+    "host": "localhost",
+    "cmdPort": 8300,
+    "dataPort": 8301,
+    "rig": "ft897",
+    "ptt_ctrl": false
+  },
   "schedule": {
     "*/30 * * * *": "connect offgrid"
   },
