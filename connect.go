@@ -6,6 +6,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/la5nta/pat/cfg"
+	"github.com/la5nta/pat/internal/debug"
 	"log"
 	"strconv"
 	"strings"
@@ -14,6 +16,7 @@ import (
 	"github.com/harenber/ptc-go/v2/pactor"
 	"github.com/la5nta/wl2k-go/transport"
 	"github.com/la5nta/wl2k-go/transport/ardop"
+	"github.com/n8jja/Pat-Vara/vara"
 
 	// Register other dialers
 	_ "github.com/la5nta/wl2k-go/transport/ax25"
@@ -21,9 +24,11 @@ import (
 )
 
 var (
-	dialing *transport.URL // The connect URL currently being dialed (if any)
-	adTNC   *ardop.TNC     // Pointer to the ARDOP TNC used by Listen and Connect
-	pModem  *pactor.Modem
+	dialing     *transport.URL // The connect URL currently being dialed (if any)
+	adTNC       *ardop.TNC     // Pointer to the ARDOP TNC used by Listen and Connect
+	pModem      *pactor.Modem
+	varaHFModem *vara.Modem
+	varaFMModem *vara.Modem
 )
 
 func hasSSID(str string) bool { return strings.Contains(str, "-") }
@@ -44,6 +49,7 @@ func Connect(connectStr string) (success bool) {
 		return Connect(aliased)
 	}
 
+	debug.Printf("connectStr: %s", connectStr)
 	url, err := transport.ParseURL(connectStr)
 	if err != nil {
 		log.Println(err)
@@ -63,6 +69,16 @@ func Connect(connectStr string) (success bool) {
 			ptCmdInit = strings.Join(val, "\n")
 		}
 		if err := initPactorModem(ptCmdInit); err != nil {
+			log.Println(err)
+			return
+		}
+	case MethodVaraHF:
+		if err := initVaraModem(varaHFModem, MethodVaraHF, config.VaraHF); err != nil {
+			log.Println(err)
+			return
+		}
+	case MethodVaraFM:
+		if err := initVaraModem(varaFMModem, MethodVaraFM, config.VaraFM); err != nil {
 			log.Println(err)
 			return
 		}
@@ -256,5 +272,34 @@ func initPactorModem(cmdlineinit string) error {
 
 	transport.RegisterDialer(MethodPactor, pModem)
 
+	return nil
+}
+
+func initVaraModem(vModem *vara.Modem, scheme string, conf cfg.VaraConfig) error {
+	if vModem != nil {
+		_ = vModem.Close()
+	}
+	vConf := vara.ModemConfig{
+		Host:     conf.Host,
+		CmdPort:  conf.CmdPort,
+		DataPort: conf.DataPort,
+	}
+	var err error
+	vModem, err = vara.NewModem(fOptions.MyCall, vConf)
+	if err != nil {
+		return fmt.Errorf("vara initialization failed: %w", err)
+	}
+
+	transport.RegisterDialer(scheme, vModem)
+
+	if !conf.PTTControl {
+		return nil
+	}
+
+	rig, ok := rigs[conf.Rig]
+	if !ok {
+		return fmt.Errorf("unable to set PTT rig '%s': not defined or not loaded", conf.Rig)
+	}
+	vModem.SetPTT(rig)
 	return nil
 }
