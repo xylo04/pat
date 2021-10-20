@@ -336,6 +336,10 @@ func initVaraModem() error {
 
 	transport.RegisterDialer(MethodVara, vModem)
 
+         if !config.Vara.PTTControl {
+                 return nil
+         }
+	
 	rig, ok := rigs[config.Vara.Rig]
 	if !ok {
 		return fmt.Errorf("unable to set PTT rig '%s': not defined or not loaded", config.Vara.Rig)
