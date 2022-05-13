@@ -73,12 +73,12 @@ func Connect(connectStr string) (success bool) {
 			return
 		}
 	case MethodVaraHF:
-		if err := initVaraModem(varaHFModem, MethodVaraHF, config.VaraHF); err != nil {
+		if varaHFModem, err = initVaraModem(varaHFModem, MethodVaraHF, config.VaraHF); err != nil {
 			log.Println(err)
 			return
 		}
 	case MethodVaraFM:
-		if err := initVaraModem(varaFMModem, MethodVaraFM, config.VaraFM); err != nil {
+		if varaFMModem, err = initVaraModem(varaFMModem, MethodVaraFM, config.VaraFM); err != nil {
 			log.Println(err)
 			return
 		}
@@ -145,6 +145,10 @@ func Connect(connectStr string) (success bool) {
 	switch url.Scheme {
 	case MethodArdop:
 		waitBusy(adTNC)
+	case MethodVaraHF:
+		waitBusy(varaHFModem)
+	case MethodVaraFM:
+		waitBusy(varaFMModem)
 	}
 
 	// Signal web gui that we are dialing a connection
@@ -275,7 +279,7 @@ func initPactorModem(cmdlineinit string) error {
 	return nil
 }
 
-func initVaraModem(vModem *vara.Modem, scheme string, conf cfg.VaraConfig) error {
+func initVaraModem(vModem *vara.Modem, scheme string, conf cfg.VaraConfig) (*vara.Modem, error) {
 	if vModem != nil {
 		_ = vModem.Close()
 	}
@@ -285,21 +289,21 @@ func initVaraModem(vModem *vara.Modem, scheme string, conf cfg.VaraConfig) error
 		DataPort: conf.DataPort,
 	}
 	var err error
-	vModem, err = vara.NewModem(fOptions.MyCall, vConf)
+	vModem, err = vara.NewModem(scheme, fOptions.MyCall, vConf)
 	if err != nil {
-		return fmt.Errorf("vara initialization failed: %w", err)
+		return nil, fmt.Errorf("vara initialization failed: %w", err)
 	}
 
 	transport.RegisterDialer(scheme, vModem)
 
 	if !conf.PTTControl {
-		return nil
+		return vModem, nil
 	}
 
 	rig, ok := rigs[conf.Rig]
 	if !ok {
-		return fmt.Errorf("unable to set PTT rig '%s': not defined or not loaded", conf.Rig)
+		return nil, fmt.Errorf("unable to set PTT rig '%s': not defined or not loaded", conf.Rig)
 	}
 	vModem.SetPTT(rig)
-	return nil
+	return vModem, nil
 }
