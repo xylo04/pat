@@ -652,7 +652,7 @@ function onConnectFreqChange() {
 
 function onConnectBandwidthChange() {
   const input = $(this);
-  console.log("connect bandwidth change " + input.val());
+  console.log('connect bandwidth change ' + input.val());
   input.attr('x-value', input.val());
   if (input.val() === '') {
     input.removeAttr('x-value');
@@ -705,10 +705,10 @@ function populateBandwidths(transport) {
     dataType: 'json',
     success: function (data) {
       if (data.bandwidths.length === 0) {
-	return;
+        return;
       }
       if (selected === undefined) {
-         selected = data.default;
+        selected = data.default;
       }
       data.bandwidths.forEach((bw) => {
         const option = $(`<option value="${bw}">${bw}</option>`);
@@ -772,39 +772,54 @@ function postPosition() {
   });
 }
 
+function attachmentTemplate(file, content) {
+  return (
+    '<button type="button" class="attachment col-xs-6 col-md-3">' +
+    '<div class="attachment-actions">' +
+    '<span class="glyphicon glyphicon-paperclip"></span> ' +
+    '<span class="spacer"></span> ' +
+    `<span class="glyphicon glyphicon-remove btn-danger remove-attachment-btn" data-file-name="${file.name}"></span> ` +
+    '</div>' +
+    content +
+    '<input type="file" >' +
+    '</button>'
+  );
+}
+
 function previewAttachmentFiles() {
-  const files = $(this).get(0).files;
+  const dropzone = $(this).get(0);
+  const files = dropzone.files;
   let attachments = $('#composer_attachments');
+  attachments.empty();
   for (let i = 0; i < files.length; i++) {
     let file = files.item(i);
 
     uploadFiles[uploadFiles.length] = file;
 
+    let thisAttachment;
     if (isImageSuffix(file.name)) {
       const reader = new FileReader();
       reader.onload = function (e) {
-        attachments.append(
-          '<div class="col-xs-6 col-md-3"><a class="thumbnail" href="#" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-paperclip"></span> ' +
-            '<img src="' +
-            e.target.result +
-            '" alt="' +
-            file.name +
-            '">' +
-            '</a></div>'
-        );
+        const imgContent = `<img class="thumbnail" src="${e.target.result}" alt="${file.name}">`;
+        thisAttachment = attachmentTemplate(file, imgContent);
       };
       reader.readAsDataURL(file);
     } else {
-      attachments.append(
-        '<div class="col-xs-6 col-md-3"><a href="#" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-paperclip"></span> ' +
-          file.name +
-          '<br>(' +
-          file.size +
-          ' bytes)' +
-          '</a></div>'
-      );
+      const otherContent = `${file.name}<br>(${file.size} bytes)`;
+      thisAttachment = attachmentTemplate(file, otherContent);
     }
+    const attachmentEl = attachments.append(thisAttachment);
+    const inputEl = attachmentEl.find('input').get(0);
+    debugger;
   }
+  const buttons = $('.remove-attachment-btn');
+  buttons.click(removeAttachment);
+}
+
+function removeAttachment(evt) {
+  console.log('Removing ' + evt.target.dataset.fileName);
+  const files = $('input#msg_attachments_input').get(0).files;
+  debugger;
 }
 
 function notify(data) {
