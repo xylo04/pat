@@ -440,7 +440,7 @@ function initConnectModal() {
   $('#addrInput').change(onConnectInputChange);
   $('#targetInput').change(onConnectInputChange);
   $('#connectURLInput').change((e) => {
-    setConnectValues($(e.target).val())
+    setConnectValues($(e.target).val());
   });
   $('#updateRmslistButton').click((e) => {
     $(e.target).prop('disabled', true);
@@ -475,14 +475,13 @@ function initConnectModal() {
     updateRmslist();
   });
   let url = localStorage.getItem('pat_connect_url');
-  if( url != null ) {
+  if (url != null) {
     setConnectValues(url);
   }
   refreshExtraInputGroups();
 
   updateConnectAliases();
   updateRmslist();
-
 }
 
 function updateRmslist(forceDownload) {
@@ -586,34 +585,38 @@ function setConnectValues(url) {
   setConnectURL(url);
 }
 
-function getConnectURL() { return $('#connectURLInput').val(); }
+function getConnectURL() {
+  return $('#connectURLInput').val();
+}
 
-function setConnectURL(url) { $('#connectURLInput').val(url); }
+function setConnectURL(url) {
+  $('#connectURLInput').val(url);
+}
 
 function buildConnectURL() {
   // Instead of building from scratch, we use the current URL as a starting
   // point to retain URI parts not supported by the modal. The unsupported
   // parts may originate from a connect alias or by manual edit of the URL
   // field.
-  var current = getConnectURL()
+  var current = getConnectURL();
   let url = URI(current)
     .protocol($('#transportSelect').val())
     .hostname($('#addrInput').val())
     .path($('#targetInput').val());
   if ($('#freqInput').val() && $('#freqInput').parent().hasClass('has-success')) {
-    url = url.setQuery("freq", $('#freqInput').val());
+    url = url.setQuery('freq', $('#freqInput').val());
   } else {
-    url = url.removeQuery("freq");
+    url = url.removeQuery('freq');
   }
   if ($('#bandwidthInput').val()) {
-    url = url.setQuery("bw", $('#bandwidthInput').val());
+    url = url.setQuery('bw', $('#bandwidthInput').val());
   } else {
-    url = url.removeQuery("bw");
+    url = url.removeQuery('bw');
   }
   if ($('#radioOnlyInput').is(':checked')) {
-    url = url.setQuery("radio_only", "true");
+    url = url.setQuery('radio_only', 'true');
   } else {
-    url = url.removeQuery("radio_only");
+    url = url.removeQuery('radio_only');
   }
   return url.build();
 }
@@ -682,7 +685,7 @@ function onConnectFreqChange() {
 
 function onConnectBandwidthChange() {
   const input = $(this);
-  console.log("connect bandwidth change " + input.val());
+  console.log('connect bandwidth change ' + input.val());
   input.attr('x-value', input.val());
   if (input.val() === '') {
     input.removeAttr('x-value');
@@ -735,10 +738,10 @@ function populateBandwidths(transport) {
     dataType: 'json',
     success: function (data) {
       if (data.bandwidths.length === 0) {
-	return;
+        return;
       }
       if (selected === undefined) {
-         selected = data.default;
+        selected = data.default;
       }
       data.bandwidths.forEach((bw) => {
         const option = $(`<option value="${bw}">${bw}</option>`);
