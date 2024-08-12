@@ -1,4 +1,26 @@
 /*!
+   * Sizzle CSS Selector Engine v2.2.1
+   * http://sizzlejs.com/
+   *
+   * Copyright jQuery Foundation and other contributors
+   * Released under the MIT license
+   * http://jquery.org/license
+   *
+   * Date: 2015-10-17
+   */
+
+/*!
+   * Sizzle CSS Selector Engine v2.3.6
+   * https://sizzlejs.com/
+   *
+   * Copyright JS Foundation and other contributors
+   * Released under the MIT license
+   * https://js.foundation/
+   *
+   * Date: 2021-02-16
+   */
+
+/*!
  * Bootstrap v3.2.0 (http://getbootstrap.com)
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -9,17 +31,6 @@
  *
  * Copyright 2013-2015 bootstrap-select
  * Licensed under MIT (https://github.com/silviomoreto/bootstrap-select/blob/master/LICENSE)
- */
-
-/*!
- * Sizzle CSS Selector Engine v2.3.6
- * https://sizzlejs.com/
- *
- * Copyright JS Foundation and other contributors
- * Released under the MIT license
- * https://js.foundation/
- *
- * Date: 2021-02-16
  */
 
 /*!
@@ -67,6 +78,20 @@
  * bootstrap-tokenfield
  * https://github.com/sliptree/bootstrap-tokenfield
  * Copyright 2013-2014 Sliptree and other contributors; Licensed MIT
+ */
+
+/*!
+ * jQuery JavaScript Library v2.2.4
+ * http://jquery.com/
+ *
+ * Includes Sizzle.js
+ * http://sizzlejs.com/
+ *
+ * Copyright jQuery Foundation and other contributors
+ * Released under the MIT license
+ * http://jquery.org/license
+ *
+ * Date: 2016-05-20T17:23Z
  */
 
 /*!
